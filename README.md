@@ -3,7 +3,7 @@ Bookmarklet to send chrome notifications for Sabotage.
 
 Filter by what service you would like to be notified of. 
 
-# Install Instructions
+# Setup Instructions
 
 Add a new Chrome Bookmark and click more.
 
