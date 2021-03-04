@@ -1,12 +1,10 @@
 javascript:(function(){
-    var QAQLength = 0;
-    var PQLength = 0;
-    var VQLength = 0;
     var mastervq = [];
-    var masterpq;
-    var masterqa;
+    var masterpq = [];
+    var masterqa = [];
+    var currentq;
 
-    alert("Blimey an owl!");
+    console.log("2.0");
 
     if (!("Notification" in window)) {
         alert("This browser does not support desktop notification");
@@ -34,27 +32,12 @@ javascript:(function(){
         var div3 = pageDiv.getElementsByTagName("div")[startPoint + vq.length + 1 + pq.length + 1];
         var qaq = div3.getElementsByTagName("div");
 
-        if (VQLength != vq.length && vq.length != 0) {
-            VQLength = vq.length;
-            var parsedvq = parse(vq);
-            if (mastervq.length == 0) {
-                mastervq = parsedvq;
-                console.log("Initial Log");
-            }
-            else if(mastervq.length < parsedvq.length) {
-                console.log(mastervq + "\n\n\n\n" + parsedvq);
-                var array = compare(mastervq, parsedvq);
-                if(array.length != 0) {
-                    filter(array);
-                    mastervq = parsedvq;
-                }
-            }
-            else {
-                console.log("other difference");
-                console.log(mastervq + "\n\n\n\n" + parsedvq);
-                mastervq = parsedvq;
-            }
-        }
+        currentq = "Verification: ";
+        mastervq = changeCheck(mastervq, vq);
+        currentq = "Production: ";
+        masterpq = changeCheck(masterpq, pq);
+        currentq = "QA: ";
+        masterqa = changeCheck(masterqa, qaq);
     }
 
     function parse(queue) {
@@ -101,16 +84,40 @@ javascript:(function(){
         var j = 0;
         var flag = true;
         var filters = ["Hive", "Havoc," , "Mayhem", "Durden", "Grunt", "Persona", "Amigo" , "Norton" , "Relay" , "Dispatch"];
-        for (i = 0; i < array; ++i) {
-            for (j = 0; j < filters; ++j) {
-                if (filters[j].includes(array[i])) {
-                    var notification = new Notification("Verification: " + array[i]);
+        for (i = 0; i < array.length; ++i) {
+            for (j = 0; j < filters.length; ++j) {
+                if (array[i].includes(filters[j])) {
+                    console.log("Should notify");
+                    var notification = new Notification(currentq + array[i]);
                     flag = false;
                 }
             }
         }
         if(flag) {
-            console.log("Filtered out: " + array);
+            console.log("Filtered out: " + currentq + array);
         }
     }
+
+    function  changeCheck(masterArr, arr){
+        var parsed = parse(arr);
+        if (masterArr.length != parsed.length) {
+            if (masterArr.length == 0) {
+                console.log(currentq + "Initial Log");
+            }
+            else if(masterArr.length < parsed.length) {
+                console.log(masterArr.length + " vs " + parsed.length);
+                var array = compare(masterArr, parsed);
+                if(array.length != 0) {
+                    filter(array);
+                }
+                console.log(masterArr.length + " vs " + parsed.length);
+
+            }
+            else {
+                console.log(currentq + "other difference");
+                console.log(masterArr.length + " vs " + parsed.length);
+            }
+        }
+        return parsed;
+    } 
 })();
