@@ -1,10 +1,11 @@
 javascript:(function(){
-    var mastervq = [];
-    var masterpq = [];
-    var masterqa = [];
-    var currentq;
+    let mastervq = [];
+    let masterpq = [];
+    let masterqa = [];
+    let filters = ["Hive", "Havoc," , "Mayhem", "Durden", "Grunt", "Persona", "Amigo" , "Norton" , "Relay" , "Dispatch"];
+    let currentq;
 
-    console.log("2.0");
+    console.log("3.0");
 
     if (!("Notification" in window)) {
         alert("This browser does not support desktop notification");
@@ -23,14 +24,18 @@ javascript:(function(){
     }
 
     function notify() {
-        var startPoint = 23;
-        var pageDiv = document.getElementById('mirage');
-        var div1 = pageDiv.getElementsByTagName('div')[startPoint];
-        var vq = div1.getElementsByTagName("div");
-        var div2 = pageDiv.getElementsByTagName("div")[startPoint + vq.length + 1];
-        var pq = div2.getElementsByTagName("div");
-        var div3 = pageDiv.getElementsByTagName("div")[startPoint + vq.length + 1 + pq.length + 1];
-        var qaq = div3.getElementsByTagName("div");
+        let startPoint = 23;
+        let pageDiv = document.getElementById('mirage');
+        let div1 = pageDiv.getElementsByTagName('div')[startPoint];
+        let vq = div1.getElementsByTagName("div");
+        let div2 = pageDiv.getElementsByTagName("div")[startPoint + vq.length + 1];
+        let pq = div2.getElementsByTagName("div");
+        let div3 = pageDiv.getElementsByTagName("div")[startPoint + vq.length + 1 + pq.length + 1];
+        let qaq = div3.getElementsByTagName("div");
+
+        hideFilters(vq);
+        hideFilters(pq);
+        hideFilters(qaq);
 
         currentq = "Verification: ";
         mastervq = changeCheck(mastervq, vq);
@@ -41,8 +46,8 @@ javascript:(function(){
     }
 
     function parse(queue) {
-        var i = 0;
-        var q = [];
+        let i = 0;
+        let q = [];
         for(i = 0; i < queue.length; ++i) {
             var str;
             if(!queue[i].innerText.includes("[") || !queue[i].innerText.includes(":")) {
@@ -59,13 +64,13 @@ javascript:(function(){
     }
 
     function compare(a1, a2) {
-        var a = [], diff = [];
+        let a = [], diff = [];
     
-        for (var i = 0; i < a1.length; i++) {
+        for (let i = 0; i < a1.length; i++) {
             a[a1[i]] = true;
         }
     
-        for (var i = 0; i < a2.length; i++) {
+        for (let i = 0; i < a2.length; i++) {
             if (a[a2[i]]) {
                 delete a[a2[i]];
             } else {
@@ -73,22 +78,21 @@ javascript:(function(){
             }
         }
     
-        for (var k in a) {
+        for (let k in a) {
             diff.push(k);
         }
         return diff;
     }
 
     function filter(array){
-        var i = 0;
-        var j = 0;
-        var flag = true;
-        var filters = ["Hive", "Havoc," , "Mayhem", "Durden", "Grunt", "Persona", "Amigo" , "Norton" , "Relay" , "Dispatch"];
+        let i = 0;
+        let j = 0;
+        let flag = true;
         for (i = 0; i < array.length; ++i) {
             for (j = 0; j < filters.length; ++j) {
                 if (array[i].includes(filters[j])) {
                     console.log("Should notify");
-                    var notification = new Notification(currentq + array[i]);
+                    let notification = new Notification(currentq + array[i]);
                     flag = false;
                 }
             }
@@ -99,25 +103,40 @@ javascript:(function(){
     }
 
     function  changeCheck(masterArr, arr){
-        var parsed = parse(arr);
+        let parsed = parse(arr);
         if (masterArr.length != parsed.length) {
             if (masterArr.length == 0) {
                 console.log(currentq + "Initial Log");
             }
             else if(masterArr.length < parsed.length) {
-                console.log(masterArr.length + " vs " + parsed.length);
-                var array = compare(masterArr, parsed);
+                let array = compare(masterArr, parsed);
                 if(array.length != 0) {
                     filter(array);
                 }
-                console.log(masterArr.length + " vs " + parsed.length);
 
             }
             else {
-                console.log(currentq + "other difference");
-                console.log(masterArr.length + " vs " + parsed.length);
+                console.log(currentq + "release moved out of queue.");
             }
         }
         return parsed;
     } 
+
+    function hideFilters(page){
+        let i;
+        let j;
+        for (i = 0; i < page.length; ++i) {
+            let unflagged = true;
+            for (j = 0; j < filters.length; ++j) {
+                if (page[i].innerText.includes(filters[j])) {
+                    let skipNum = page[i].getElementsByTagName('div');
+                    unflagged = false;
+                    i += skipNum.length;
+                }
+            }
+            if (unflagged) {
+                page[i].style.display = "none";
+            }
+        }
+    }
 })();
